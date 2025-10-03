@@ -9,4 +9,4 @@ entity ram is
     
 
   );
-end ram
+end ram;
