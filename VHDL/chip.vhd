@@ -1,3 +1,9 @@
+--
+-- Entity: negative edge triggered Chip
+-- Architecture : structural
+-- Author: Daniel Giro, Ian Lane
+--
+
 library STD;
 library IEEE;                      
 use IEEE.std_logic_1164.all;
