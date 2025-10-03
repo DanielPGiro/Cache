@@ -13,7 +13,7 @@ component chip
       clk        : in  std_logic;
       reset      : in  std_logic;
       mem_data   : in  std_logic_vector(7 downto 0);
-      Vdd	 : in  std_logic;
+      Vdd	     : in  std_logic;
       Gnd        : in  std_logic;
       busy       : out std_logic;
       mem_en     : out std_logic;
