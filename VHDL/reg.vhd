@@ -1,12 +1,12 @@
 --
--- Entity: negative edge triggered ram
+-- Entity: negative edge triggered registers (reg)
 -- Architecture : structural
 -- Author: Daniel Giro, Ian Lane
 --
 
-entity ram is
+entity reg is
   port (
     
 
   );
-end ram;
+end reg;
