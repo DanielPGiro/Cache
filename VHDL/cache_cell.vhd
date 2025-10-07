@@ -8,7 +8,7 @@ entity cache_cell is
     clk : in std_logic;
     IE : in std_logic; -- Input enable
     OE : in std_logic; -- Output enable
-    data_out : in std_logic
+    data_out : out std_logic
   );
 end cache_cell;
 

@@ -7,17 +7,19 @@
 
 entity cache_block is
   port(
+    byte_in : in std_logic_vector(7 downto 0);
     byte_0_select : in std_logic;
     byte_1_select : in std_logic;
     byte_2_select : in std_logic;
     byte_3_select : in std_logic;
     clk : in std_logic;
-    IE : in std_logic;
+    IE : in std_logic; -- This is controlled externally by a decoder as well as the outputs of this entity's tag and valid bits
     OE : in std_logic;
     valid_enable : in std_logic; -- valid and tag enable are only set high on a read miss
     valid_set : in std_logic;
     tag_enable : in std_logic;
     tag_set : in std_logic_vector(1 downto 0);
+    tag_valid_out_enable : in std_logic; -- Allows output of tag and valid bits
     byte_out : out std_logic_vector(7 downto 0);
     valid_out : out std_logic;
     tag_out : out std_logic_vector(1 downto 0)
@@ -54,10 +56,27 @@ architecture structural of cache_block is
 
   for valid, tag_0, tag_1: cache_cell use entity work.cache_cell(structural); -- Set up latches for the valid and tag bits for each block.
   for byte_0, byte_1, byte_2, byte_3: reg use entity work.reg(structural);
+  for and_IE_0, and_IE_1, and_IE_2, and_IE_3, and_OE_0, and_OE_1, and_OE_2, and_OE_3: and2 use entity work.and2(structural);
+
+  signal IE_0, IE_1, IE_2, IE_3, OE_0, OE_1, OE_2, OE_3: std_logic;
 
   begin
-    valid: cache_cell port map (valid_set, clk, valid_enable, OE, valid_out); -- OE may change based on implementation
-    tag_0: cache_cell port map (tag_set[0], clk, tag_enable, OE, tag_out[0]);
-    tag_1: cache_cell port map(tag_set[1], clk, tag_enable, OE, tag_out[1]);
+    valid: cache_cell port map (valid_set, clk, valid_enable, tag_valid_out_enable, valid_out);
+    tag_0: cache_cell port map (tag_set[0], clk, tag_enable, tag_valid_out_enable, tag_out[0]);
+    tag_1: cache_cell port map (tag_set[1], clk, tag_enable, tag_valid_out_enable, tag_out[1]);
+
+    and_IE_0: and2 port map (IE, byte_0_select, IE_0);
+    and_IE_1: and2 port map (IE, byte_1_select, IE_1);
+    and_IE_2: and2 port map (IE, byte_2_select, IE_2);
+    and_IE_3: and2 port map (IE, byte_3_select, IE_3);
+    and_OE_0: and2 port map (OE, byte_0_select, OE_0);
+    and_OE_1: and2 port map (OE, byte_1_select, OE_1);
+    and_OE_2: and2 port map (OE, byte_2_select, OE_2);
+    and_OE_3: and2 port map (OE, byte_3_select, OE_3);
+
+    byte_0: reg port map (byte_in, clk, IE_0, OE_0, byte_out);
+    byte_1: reg port map (byte_in, clk, IE_1, OE_1, byte_out);
+    byte_2: reg port map (byte_in, clk, IE_2, OE_2, byte_out);
+    byte_3: reg port map (byte_in, clk, IE_3, OE_3, byte_out);
 
 end structural;
