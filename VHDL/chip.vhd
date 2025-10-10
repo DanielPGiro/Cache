@@ -10,7 +10,7 @@ use IEEE.std_logic_1164.all;
 
 entity chip is
     port (
-      cpu_add    : in  std_logic_vector(5 downto 0);
+      cpu_add    : in  std_logic_vector(5 downto 0); 
       cpu_data   : inout  std_logic_vector(7 downto 0);
       cpu_rd_wrn : in  std_logic;    
       start      : in  std_logic;
@@ -26,8 +26,8 @@ entity chip is
 end chip;
 
 architecture structural of chip is
-
-begin
-  something
+    component 
+    begin
+      something
 
 end structural;
