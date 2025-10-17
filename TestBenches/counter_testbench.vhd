@@ -1,8 +1,3 @@
--- Entity: counter_reg_test 
--- Architecture : test 
--- Author: giropau1
--- Created On: 11/14/2014
---
 
 -- Input
 -- Line 1: clk
@@ -15,31 +10,31 @@ use IEEE.std_logic_1164.all;
 use IEEE.std_logic_textio.all;
 use STD.textio.all;
   
-entity counter_reg_test is
+entity counter_test is
   
-end counter_reg_test;
+end counter_test;
   
-architecture test of counter_reg_test is
+architecture test of counter_test is
 
-component counter_reg
+component counter
   port (
     clk     : in  std_logic;
     rst		: in  std_logic;
-    Q       : inout std_logic_vector(4 downto 0));
+    Q       : inout std_logic_vector(3 downto 0));
 end component;
 
-for counter_reg_0 : counter_reg use entity work.counter_reg(structural);
+for counter_0 : counter use entity work.counter(structural);
 
-signal Qout : std_logic_vector(4 downto 0);
+signal Qout : std_logic_vector(3 downto 0);
 signal reset, clock : std_logic;
 
 begin
   
-counter_reg_0 : counter_reg port map (clock, reset, Qout);
+counter_0 : counter port map (clock, reset, Qout);
   
 io_process: process
-  file infile  : text is in  "counter_reg_test_in.txt";
-  file outfile : text is out "counter_reg_test_out.txt";
+  file infile  : text is in  "counter_test_in.txt";
+  file outfile : text is out "counter_test_out.txt";
   variable op1 : std_logic;
   variable buf : line;
     
