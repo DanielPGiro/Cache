@@ -3,6 +3,9 @@
 -- Architecture : structural
 -- Author: Daniel Giro, Ian Lane
 --
+library IEEE;
+library STD;
+use IEEE.std_logic_1164.all;
 
 entity state_machine is
   port( 
@@ -15,12 +18,31 @@ entity state_machine is
     valid      : in std_logic;
     busy       : in std_logic;
     IE         : out std_logic;
-    OE         : out std_logic_vector(5 downto 0);
-    c
+    OE         : out std_logic_vector(5 downto 0)
   );
 end state_machine;
 
 architecture structural of state_machine is
+  
+  component curr_state
+    port (
+      start  : in std_logic;
+      busy   : in std_logic;
+      clk    : in std_logic;
+      IE     : out std_logic;
+      OE     : out std_logic
+    );
+  end component;
+
+  component nxt_state
+    port (
+      start  : in std_logic;
+      busy   : in std_logic;
+      IE     : out std_logic;
+      OE     : out std_logic
+    );
+  end component;
+  
   component idle
     port (
       start  : in std_logic;
@@ -75,6 +97,6 @@ architecture structural of state_machine is
   end component;
   
   begin
-    something
+    
 
 end structural;
