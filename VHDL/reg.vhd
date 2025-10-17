@@ -4,6 +4,10 @@
 -- Author: Daniel Giro, Ian Lane
 --
 
+library IEEE;
+library STD;
+use IEEE.std_logic_1164.all;
+
 entity reg is
   port (
    bit_in : in std_logic_vector(7 downto 0);

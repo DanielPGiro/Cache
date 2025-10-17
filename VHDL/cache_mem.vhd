@@ -3,6 +3,10 @@
 -- Architecture: structural
 -- Author: Daniel Giro, Ian Lane
 
+library IEEE;
+library STD;
+use IEEE.std_logic_1164.all;
+
 
 entity cache_mem is
   port (
@@ -16,6 +20,7 @@ entity cache_mem is
     clk : in std_logic;
     IE : in std_logic; -- Controlled by state machine, mapped to every reg
     OE : in std_logic;
+    reset : in std_logic;
     byte_out : out std_logic_vector(7 downto 0); -- For read
     valid_out : out std_logic;
     tag_out : out std_logic_vector(1 downto 0)
@@ -33,6 +38,7 @@ architecture structural of cache_mem is
       clk : in std_logic;
       IE : in std_logic;
       OE : in std_logic;
+      reset : in std_logic;
       valid_enable : in std_logic;
       valid_set : in std_logic;
       tag_enable: in std_logic;
@@ -76,10 +82,10 @@ architecture structural of cache_mem is
   signal T_E_0, T_E_1, T_E_2, T_E_3: std_logic; -- Tag enables
 
   begin
-    block_decoder: port map (VDD, CA[2], CA[3], block_0_E, block_1_E, block_2_E, block_3_E);
-    block_decoder: port map (VDD, CA[0], CA[1], byte_0, byte_1, byte_2, byte_3);
+    block_decoder: port map (VDD, CA[2], CA[3], block_0_E, block_1_E, block_2_E, block_3_E); -- Decodes which block using
+    block_decoder: port map (VDD, CA[0], CA[1], byte_0, byte_1, byte_2, byte_3); -- Decode byte using
 
-    and_IE_0: port map (IE, block_0_E, IE_0);
+    and_IE_0: port map (IE, block_0_E, IE_0); -- If input enable is high and the block is selected, we transfer that to the cache_block
     and_IE_1: port map (IE, block_1_E, IE_1);
     and_IE_2: port map (IE, block_2_E, IE_2);
     and_IE_3: port map (IE, block_3_E, IE_3);
@@ -97,13 +103,13 @@ architecture structural of cache_mem is
     andT_E_2: port map (tag_enable, block_2_E, T_E_2);
     andT_E_3: port map (tag_enable, block_3_E, T_E_3);
 
-    block_1: port map (byte_0, byte_1, byte_2, byte_3, clk, IE_0, OE_0, V_E_0, valid_set, T_E_0, tag_set, block_0_E, byte_out, valid_out, tag_out);
+    block_1: port map (byte_0, byte_1, byte_2, byte_3, clk, IE_0, OE_0, reset, V_E_0, valid_set, T_E_0, tag_set, block_0_E, byte_out, valid_out, tag_out);
 
-    block_1: port map (byte_0, byte_1, byte_2, byte_3, clk, IE_1, OE_1, V_E_1, valid_set, T_E_1, tag_set, block_1_E, byte_out, valid_out, tag_out);
+    block_1: port map (byte_0, byte_1, byte_2, byte_3, clk, IE_1, OE_1, reset, V_E_1, valid_set, T_E_1, tag_set, block_1_E, byte_out, valid_out, tag_out);
 
-    block_1: port map (byte_0, byte_1, byte_2, byte_3, clk, IE_2, OE_2, V_E_2, valid_set, T_E_2, tag_set, block_2_E, byte_out, valid_out, tag_out);
+    block_1: port map (byte_0, byte_1, byte_2, byte_3, clk, IE_2, OE_2, reset, V_E_2, valid_set, T_E_2, tag_set, block_2_E, byte_out, valid_out, tag_out);
 
-    block_1: port map (byte_0, byte_1, byte_2, byte_3, clk, IE_3, OE_3, V_E_3, valid_set, T_E_3, tag_set, block_3_E, byte_out, valid_out, tag_out);
+    block_1: port map (byte_0, byte_1, byte_2, byte_3, clk, IE_3, OE_3, reset, V_E_3, valid_set, T_E_3, tag_set, block_3_E, byte_out, valid_out, tag_out);
 
 
 end structural;
