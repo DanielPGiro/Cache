@@ -1,19 +1,19 @@
 --
--- Entity: counter_reg
+-- Entity: counter
 -- Architecture : structural
--- Author: giropau1
+-- Author: Daniel Giro, Ian Lane
 -- Created On: 11/15/2014
 --
 library STD;
 library IEEE;
 use IEEE.std_logic_1164.all;
 
-entity counter_reg is
+entity counter is
   port (
     clk     : in  std_logic;
     rst		: in  std_logic;
-    Q       : inout std_logic_vector(4 downto 0));
-end counter_reg;
+    Q       : inout std_logic_vector(3 downto 0));
+end counter;
 
 architecture structural of counter_reg is
 
@@ -24,10 +24,12 @@ component inverter
 end component;
 
 component dff
-	port ( d   : in  std_logic;
-         clk : in  std_logic;
-         q   : out std_logic;
-         qbar: out std_logic); 
+	port ( 
+		d   : in  std_logic;
+    	clk : in  std_logic;
+        q   : out std_logic;
+        qbar: out std_logic
+	); 
 end component;
 
 component and2 
@@ -66,7 +68,7 @@ signal temp1 	: std_logic;
 signal temp2	: std_logic_vector (1 downto 0);
 signal temp3 	: std_logic_vector (1 downto 0);
 signal temp4	: std_logic_vector (2 downto 0);
-signal Q_temp, Qin	: std_logic_vector (4 downto 0);
+signal Q_temp, Qin	: std_logic_vector (3 downto 0);
 
 begin
 
@@ -102,4 +104,5 @@ and2_6: and2 port map (temp4(2), rst_bar, Q_temp(4));
 dff_4: dff port map (Q_temp(4), clk, Q(4));
 
 end structural;
+
 
