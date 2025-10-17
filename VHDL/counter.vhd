@@ -57,7 +57,7 @@ end component;
 
 
 for inv_0, inv_1 : inverter use entity work.inverter(structural);
-for dff_0, dff_1, dff_2, dff_3, dff_4 : dff use entity work.dff(structural);
+for dff_0, dff_1, dff_2, dff_3 : dff use entity work.dff(structural);
 for xor2_0, xor2_1, xor2_2, xor2_3 : xor2 use entity work.xor2(structural);
 for and2_0, and2_1, and2_2, and2_3, and2_4, and2_5, and2_6 : and2 use entity work.and2(structural);
 for and3_0, and3_1 : and3 use entity work.and3(structural);
@@ -67,7 +67,7 @@ signal rst_bar, Q0_bar	: std_logic;
 signal temp1 	: std_logic;
 signal temp2	: std_logic_vector (1 downto 0);
 signal temp3 	: std_logic_vector (1 downto 0);
-signal temp4	: std_logic_vector (2 downto 0);
+--signal temp4	: std_logic_vector (2 downto 0);
 signal Q_temp, Qin	: std_logic_vector (3 downto 0);
 
 begin
@@ -97,12 +97,13 @@ and2_4: and2 port map (temp3(1), rst_bar, Q_temp(3));
 dff_3: dff port map (Q_temp(3), clk, Q(3));
 
 -- Bit 4 --  
-and3_1: and3 port map (Q(0), Q(1), Q(2), temp4(0));
-and2_5: and2 port map (Q(3), temp4(0), temp4(1)); 
-xor2_3: xor2 port map (Q(4), temp4(1), temp4(2));
-and2_6: and2 port map (temp4(2), rst_bar, Q_temp(4));
-dff_4: dff port map (Q_temp(4), clk, Q(4));
+--and3_1: and3 port map (Q(0), Q(1), Q(2), temp4(0));
+--and2_5: and2 port map (Q(3), temp4(0), temp4(1)); 
+--xor2_3: xor2 port map (Q(4), temp4(1), temp4(2));
+--and2_6: and2 port map (temp4(2), rst_bar, Q_temp(4));
+--dff_4: dff port map (Q_temp(4), clk, Q(4));
 
 end structural;
+
 
 
