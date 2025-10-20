@@ -15,7 +15,7 @@ entity counter is
     Q       : inout std_logic_vector(3 downto 0));
 end counter;
 
-architecture structural of counter_reg is
+architecture structural of counter is
 
 component inverter
   port (
@@ -104,6 +104,7 @@ dff_3: dff port map (Q_temp(3), clk, Q(3));
 --dff_4: dff port map (Q_temp(4), clk, Q(4));
 
 end structural;
+
 
 
 
