@@ -83,7 +83,7 @@ architecture structural of cache_mem is
 
   begin
     block_decoder: port map (VDD, CA[2], CA[3], block_0_E, block_1_E, block_2_E, block_3_E); -- Decodes which block using
-    block_decoder: port map (VDD, CA[0], CA[1], byte_0, byte_1, byte_2, byte_3); -- Decode byte using
+    byte_decoder: port map (VDD, CA[0], CA[1], byte_0, byte_1, byte_2, byte_3); -- Decode byte using
 
     and_IE_0: port map (IE, block_0_E, IE_0); -- If input enable is high and the block is selected, we transfer that to the cache_block
     and_IE_1: port map (IE, block_1_E, IE_1);
