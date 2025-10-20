@@ -7,6 +7,7 @@ entity tag_comparator is
     TA1 : in std_logic;
     TB0 : in std_logic; -- TB is the tag in the block index
     TB1 : in std_logic;
+    valid : in std_logic;
     output : out std_logic
   );
 end tag_comparator;
@@ -28,14 +29,24 @@ architecture structural of tag_comparator is
     );
   end component;
 
+  component and2
+    port (
+      input1 : in std_logic;
+      input2 : in std_logic;
+      output : out std_logic
+    );
+  end component;
+
   for xor2_0, xor2_1: xor2 use entity work.xor2(structural);
   for nor2_0: nor2 use entity work.nor2(structural);
+  for and2_0: and2 use entity work.and2(structural);
 
-  signal T0, T1: std_logic;
+  signal T0, T1, tag_valid: std_logic;
 
   begin
     xor2_0: xor2 port map (TA0, TB0, T0);
     xor2_1: xor2 port map (TA1, TB1, T1);
-    nor2_0: nor2 port map(T0, T1, output);
+    nor2_0: nor2 port map(T0, T1, tag_valid);
+    and2_0: and2 port map(tag_valid, valid, output);
 
 end structural;
