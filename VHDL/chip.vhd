@@ -63,10 +63,10 @@ architecture structural of chip is
     for sm: use entity work.state_machine(structural);
     for cmem: use entity work.cache_mem(structural);
 
-   -- signal somethingtoadd
+    signal ie: std_logic;
     
     begin 
-        sm: port map ();
-        cmem: port map();
+        sm: state_machine port map (signalstoadd);
+        cmem: cache_mem port map(signalstoadd);
 
 end structural;
