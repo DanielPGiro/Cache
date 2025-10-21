@@ -9,7 +9,7 @@ entity next_state is
   port (
     busy : in std_logic;
     start : in std_logic;
-    count : in std_logic_vector (2 downto 0);
+    count : in std_logic_vector (3 downto 0);
     valid : in std_logic;
     rd_wr : in std_logic;
     curr_state : in std_logic_vector (8 downto 0);
