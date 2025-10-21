@@ -10,6 +10,7 @@ use IEEE.std_logic_1164.all;
 entity state_machine is
   port( 
     cpu_rd_wrn : in  std_logic;    
+    cpu_add    : in std_logic_vector(5 downto 0);  -- for tag
     start      : in  std_logic;
     clk        : in  std_logic;
     reset      : in  std_logic;
@@ -36,10 +37,13 @@ architecture structural of state_machine is
 
   component nxt_state
     port (
-      start  : in std_logic;
-      busy   : in std_logic;
-      IE     : out std_logic;
-      OE     : out std_logic
+      busy : in std_logic;
+      start : in std_logic;
+      count : in std_logic_vector (3 downto 0);
+      valid : in std_logic;
+      rd_wr : in std_logic;
+      curr_state : in std_logic_vector (8 downto 0);
+      next_state : out std_logic_vector (8 downto 0)
     );
   end component;
   
@@ -95,6 +99,8 @@ architecture structural of state_machine is
       
     );
   end component;
+
+  signal tag: std_logic_vector(1 downto 0);
   
   begin
     
