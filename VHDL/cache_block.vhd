@@ -7,7 +7,7 @@
 
 library IEEE;
 library STD;
-use IEEE.std_logic_1164.all
+use IEEE.std_logic_1164.all;
 
 entity cache_block is
   port(
@@ -32,7 +32,7 @@ entity cache_block is
 end cache_block;
 
 architecture structural of cache_block is
-  component cache_cell is
+  component cache_cell
     port (
       data_in : in std_logic;
       clk : in std_logic;
@@ -42,7 +42,7 @@ architecture structural of cache_block is
     );
   end component;
 
-  component reg is
+  component reg
     port (
       bit_in : in std_logic_vector(7 downto 0);
       clk : in std_logic;
@@ -103,8 +103,8 @@ architecture structural of cache_block is
     or2_0: or2 port map (reset, valid_enable, valid_reset_enable);
 
     valid: cache_cell port map (valid_reset_set, clk, valid_reset_enable, tag_valid_out_enable, valid_out);
-    tag_0: cache_cell port map (tag_set[0], clk, tag_enable, tag_valid_out_enable, tag_out[0]);
-    tag_1: cache_cell port map (tag_set[1], clk, tag_enable, tag_valid_out_enable, tag_out[1]);
+    tag_0: cache_cell port map (tag_set(0), clk, tag_enable, tag_valid_out_enable, tag_out(0));
+    tag_1: cache_cell port map (tag_set(1), clk, tag_enable, tag_valid_out_enable, tag_out(1));
 
     and_IE_0: and2 port map (IE, byte_0_select, IE_0);
     and_IE_1: and2 port map (IE, byte_1_select, IE_1);
