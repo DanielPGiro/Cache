@@ -8,12 +8,11 @@ library STD;
 use IEEE.std_logic_1164.all;
 
 
-entity  is
+entity current_state is
   port (
     
   );
-
-end cache mem;
+end current_state;
 
 architecture structural of current_state is
   component 
@@ -22,7 +21,7 @@ architecture structural of current_state is
     );
   end component;
 
-for cs: use entity ;
+for curr_s: use entity ;
 
 signal ;
 
