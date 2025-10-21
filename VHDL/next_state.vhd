@@ -103,27 +103,27 @@ architecture structural of next_state is
   signal busy_inv, count_nand, count_and, wait_for_mem, stay_write_mem, leave_write_mem, move_write_mem, stay_mem : std_logic;
 
   begin
-    inv_1 : inverter port map (busy, next_state[0]); -- When busy is 0, always in idle state
-    and2_1 : and2 port map (curr_state[0], start, next_state[1]); -- latch inputs when we are idling and get the start signal
+    inv_1 : inverter port map (busy, next_state(0)); -- When busy is 0, always in idle state
+    and2_1 : and2 port map (curr_state(0), start, next_state(1)); -- latch inputs when we are idling and get the start signal
 
-    decoder_1 : decoder_2_4 port map (curr_state[1], rd_wr, valid, next_state[4], next_state[3], next_state[5], next_state[2]); -- Move to read/write hit/miss if we have finished latching inputs
+    decoder_1 : decoder_2_4 port map (curr_state(1), rd_wr, valid, next_state(4), next_state(3), next_state(5), next_state(2)); -- Move to read/write hit/miss if we have finished latching inputs
 
-    nand3_1: nand3 port map (count[0], count[1], count[2], count_nand); -- Produces 1 when count is not 8 (7)
+    nand3_1: nand3 port map (count(0), count(1), count(2), count_nand); -- Produces 1 when count is not 8 (7)
     inv_2: inverter port map (count_nand, count_and); -- Produces 1 when count is 8 (7)
 
-    and2_2: and2 port map (curr_state[6], count_nand, wait_for_mem);
-    or2_1: or2 port map (curr_state[5], wait_for_mem, next_state[6]); -- Move to wait for mem state if we get a read miss or the count has not finished its 8 clock cycles
+    and2_2: and2 port map (curr_state(6), count_nand, wait_for_mem);
+    or2_1: or2 port map (curr_state(5), wait_for_mem, next_state(6)); -- Move to wait for mem state if we get a read miss or the count has not finished its 8 clock cycles
 
-    and2_3: and2 port map (curr_state[6], count_and, move_write_mem); -- Move to write mem if we are done waiting for mem
+    and2_3: and2 port map (curr_state(6), count_and, move_write_mem); -- Move to write mem if we are done waiting for mem
 
-    nand4_1: nand4 port map (count[0], count[1], count[2], count[3], stay_write_mem); -- Waiting for mem and writing memory to cache takes a total of 16 clock cycles.
+    nand4_1: nand4 port map (count(0), count(1), count(2), count(3), stay_write_mem); -- Waiting for mem and writing memory to cache takes a total of 16 clock cycles.
 
-    and2_4: and2 port map(curr_state[7], stay_write_mem, stay_mem);
+    and2_4: and2 port map(curr_state(7), stay_write_mem, stay_mem);
 
-    or2_2: or2 port map(stay_memm move_write_mem, next_state[7]); -- Move to write mem if we get a read miss, or we are still writing memory to cache
+    or2_2: or2 port map(stay_memm move_write_mem, next_state(7)); -- Move to write mem if we get a read miss, or we are still writing memory to cache
 
     inv_3: inverter port map(stay_write_mem, leave_write_mem);
 
-    and2_5: and2 port map(curr_state[7], leave_write_mem, next_state[8]); -- Move to read mem once we are done writting all the memory
+    and2_5: and2 port map(curr_state(7), leave_write_mem, next_state(8)); -- Move to read mem once we are done writting all the memory
   
 end structural;
