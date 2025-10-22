@@ -2,8 +2,8 @@
 -- Entity: counter
 -- Architecture : structural
 -- Author: Daniel Giro, Ian Lane
--- Created On: 11/15/2014
 --
+
 library STD;
 library IEEE;
 use IEEE.std_logic_1164.all;
@@ -96,6 +96,7 @@ and2_4: and2 port map (temp3(1), rst_bar, Q_temp(3));
 dff_3: dff port map (Q_temp(3), clk, Q(3));
 
 end structural;
+
 
 
 
