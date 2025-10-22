@@ -106,7 +106,9 @@ architecture structural of next_state is
     inv_1 : inverter port map (busy, next_state(0)); -- When busy is 0, always in idle state
     and2_1 : and2 port map (curr_state(0), start, next_state(1)); -- latch inputs when we are idling and get the start signal
 
-    decoder_1 : decoder_2_4 port map (curr_state(1), rd_wr, valid, next_state(4), next_state(3), next_state(5), next_state(2)); -- Move to read/write hit/miss if we have finished latching inputs
+    -- Next_state(1) will go directly into the input enable to the latch inputs.
+    -- The decoder must be enabled to get the correct state on the next negative edge after start goes low
+    decoder_1 : decoder_2_4 port map (next_state(1), rd_wr, valid, next_state(4), next_state(3), next_state(5), next_state(2)); -- Move to read/write hit/miss if we have finished latching inputs
 
     nand3_1: nand3 port map (count(0), count(1), count(2), count_nand); -- Produces 1 when count is not 8 (7)
     inv_2: inverter port map (count_nand, count_and); -- Produces 1 when count is 8 (7)
