@@ -15,7 +15,7 @@ entity counter_2_bit is
     Q       : inout std_logic_vector(1 downto 0));
 end counter_2_bit;
 
-architecture structural of counter is
+architecture structural of counter_2_bit is
 
 component inverter
   port (
