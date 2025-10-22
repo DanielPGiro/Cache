@@ -1,4 +1,4 @@
-library IEEE:
+library IEEE;
 library STD;
 use IEEE.std_logic_1164.all;
 
