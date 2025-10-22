@@ -1,5 +1,5 @@
 --
--- Entity: counter
+-- Entity: counter_1_bit
 -- Architecture : structural
 -- Author: Daniel Giro, Ian Lane
 --
@@ -8,14 +8,14 @@ library STD;
 library IEEE;
 use IEEE.std_logic_1164.all;
 
-entity counter is
+entity counter_1_bit is
   port (
     clk     : in  std_logic;
     rst		: in  std_logic;
     Q       : inout std_logic;
-end counter;
+end counter_1_bit;
 
-architecture structural of counter is
+architecture structural of counter_1_bit is
 
 component inverter
   port (
