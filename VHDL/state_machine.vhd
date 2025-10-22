@@ -14,18 +14,35 @@ entity state_machine is
     start      : in  std_logic;
     clk        : in  std_logic;
     reset      : in  std_logic;
-    rd_wr      : in  std_logic;
     Vdd	       : in  std_logic;
     Gnd        : in  std_logic;
     valid      : in std_logic;
     busy_in    : in std_logic;
     latch_enable : out std_logic;
     tag_enable : out std_logic;
+    valid_enable : out std_logic;
+    CD_MD      : out std_logic; -- High we access cpu data low we access memory data
+    mem_enable : out std_logic;
+    MA         : out std_logic_vector(1 downto 0);
+    MA_select  : out std_logic; -- When 1, MA goes through, when 0, CA goes through
     busy_out   : out std_logic;
     IE         : out std_logic;
     OE         : out std_logic
   );
 end state_machine;
+
+
+-- States:
+-- states[0] idle
+-- states[1] latch inputs
+-- states[2] read hit
+-- states[3] write hit
+-- states[4] write miss
+-- states[5] read miss
+-- states[6] wait for mem
+-- states[7] write mem
+-- states[8] read mem
+
 
 architecture structural of state_machine is
   
@@ -48,6 +65,31 @@ architecture structural of state_machine is
     );
   end component;
 
+  component counter
+    port (
+      clk : in std_logic;
+      rst : in std_logic;
+      Q : inout std_logic_vector(3 downto 0)
+    );
+  end component;
+
+  component counter_1_bit
+    port (
+      clk : in std_logic;
+      rst : in std_logic;
+      Q : inout std_logic
+    );
+  end component;
+
+  component counter_2_bit
+    port (
+      clk : in std_logic;
+      rst : in std_logic;
+      Q : inout std_logic_vector(1 downto 0)
+    );
+  end component; 
+
+
   component and2
     port (
       input1 : in std_logic;
@@ -62,24 +104,79 @@ architecture structural of state_machine is
       input2 : in std_logic;
       output : out std_logic
     );
+  end component;
 
-    for next_state_1: next_state use entity work.next_state(structural);
-    for curr_state_1: curr_state use entity work.curr_state(structural);
+  component or6
+    port (
+      input1 : in std_logic;
+      input2 : in std_logic;
+      input3 : in std_logic;
+      input4 : in std_logic;
+      input5 : in std_logic;
+      input6 : in std_logic;
+      output : out std_logic
+    );
+  end component;
+
+
+  component inverter
+    port (
+      input : in std_logic;
+      output : out std_logic
+    );
+  end component;
+
+  for next_state_1: next_state use entity work.next_state(structural);
+  for curr_state_1: curr_state use entity work.curr_state(structural);
   
-    for or2_1: or2 use entity work.or2(structural);
+  for or2_1, or2_2: or2 use entity work.or2(structural);
+  for and2_1: and2 use entity work.and2(strucutral);
+  for inv_1: inverter use entity work.inverter(structural);
+
+  for counter_1: counter use entity work.counter(structural);
+
+  for counter_1_bit_1: counter_1_bit use entity work.counter_1_bit(structural);
+  for counter_2_bit_1: counter_2_bit use entity work.counter_2_bit(structural);
 
   signal tag: std_logic_vector(1 downto 0);
   signal curr_state, next_state : std_logic_vector(8 downto 0);
   signal curr_count : std_logic_vector(3 downto 0);
+  signal mem_write_inv : std_logic;
+  signal Q_1_bit, mem_wr_en : std_logic;
+  signal Q_2_bit : std_logic_vector(1 downto 0);
   
   begin
 
-    next_state_1: next_state port map (busy, start, curr_count, valid, rd_wr, curr_state, next_state);
+    next_state_1: next_state port map (busy, start, curr_count, valid, cpu_rd_wrn, curr_state, next_state);
     curr_state_1: curr_state port map (next_state, curr_state);
 
+    counter_1 : counter port map (clk, curr_state(5), curr_count);
+
+    counter_1_bit_1 : counter_1_bit port map (clk, next_state(7), Q_1_bit); -- Reset is asynch so 0 will be clocked at same time we enter the write mem state
+    counter_2_bit_1 : counter_2_bit port map (Q_1_bit, next_state(7), Q_2_bit); -- Increment the byte address by 1 when input enabe is high, this new address shoud be clocked on the following clock cycle
+
     or2_1: or2 port map (curr_state(2), curr_state(8), OE); -- Output gets enabled when we are in a read state
+    
+    and2_1: and2 port map (curr_state(7), Q_1_bit, mem_wr_en);
+    or2_2: or2 port map (curr_state(3), mem_wr_en, IE); -- IE if read hit or (writing mem data and counter is 1)
+
+    or6_1: or6 port map (next_state(1), next_state(3), next_state(4), next_state(5), next_state(6), next_state(7), busy_out);
+
+    inv_1: inverter port map (curr_state(7), mem_write_inv);
 
     latch_enable <= next_state(1); -- For timing rquirements, we latch the inputs on the negative edge of start going low (one cycle)
+
+    tag_enable <= curr_state(7); -- Write the tag and valid when writing from memory
+    valid_enable <= curr_state(7);
+
+    CD_MD <= mem_write_inv; -- When not in meme write state this is a one which means it will always pull cpu data
+
+    mem_enable <= curr_state(5); -- Output mem enable for one clock cycle before waiting for memory
+
+    MA_select <= curr_state(7);
+
+    MA <= Q_2_bit;
     
 
 end structural;
+
