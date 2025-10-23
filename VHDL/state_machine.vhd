@@ -24,7 +24,7 @@ entity state_machine is
     CD_MD      : out std_logic; -- High we access cpu data low we access memory data
     mem_enable : out std_logic;
     MA         : out std_logic_vector(1 downto 0);
-    states     : out std_logic_vector(8 downto 0); -- debug
+   -- states     : out std_logic_vector(8 downto 0); -- debug
     MA_select  : out std_logic; -- When 1, MA goes through, when 0, CA goes through
     busy_out   : out std_logic;
     IE         : out std_logic;
@@ -196,7 +196,7 @@ architecture structural of state_machine is
 
     MA <= Q_2_bit;
 
-    states <= curr_state_sig;
+    --states <= curr_state_sig;
     
 
 end structural;

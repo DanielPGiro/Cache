@@ -37,11 +37,11 @@ architecture structural of chip is
             Gnd        : in  std_logic;
             valid      : in std_logic;
             busy_in    : in std_logic;
+            latch_enable : out std_logic;
+            tag_enable : out std_logic;
             valid_enable : out std_logic;
             CD_MD        : out std_logic;
             mem_enable  : out std_logic;
-            latch_enable : out std_logic;
-            tag_enable : out std_logic;
             MA         : out std_logic_vector(1 downto 0);
             MA_select  : out std_logic;
             busy_out   : out std_logic;
@@ -144,7 +144,7 @@ architecture structural of chip is
         
     begin 
         -- State machine and Cache memory mapping --
-        sm: state_machine port map (cpu_rd_wrn, cc_add, start, clk, reset, Vdd, Gnd, tag_out, state_bsy_in, state_valid_en, state_cd_md, state_mem_en, state_latch_en, state_tag_en, state_ma, state_ma_sel, state_bsy_out, state_IE, state_OE);
+        sm: state_machine port map (cpu_rd_wrn, cc_add, start, clk, reset, Vdd, Gnd, tag_out, state_bsy_in, state_latch_en, state_tag_en, state_valid_en, state_cd_md, state_mem_en, state_ma, state_ma_sel, state_bsy_out, state_IE, state_OE);
         cmem: cache_mem port map (mux8_out, ca_4, cc_add(5 downto 4), state_tag_en, state_valid_en, state_valid_en, Vdd, clk, state_IE, state_OE, reset, cmem_byte, cmem_valid, cmem_tag);
 
         -- Latch CPU Address and the Read/Write -- 
@@ -165,5 +165,10 @@ architecture structural of chip is
         -- Cpu address --
         ca_4(3 downto 2) <= cc_add(3 downto 2);
         ca_4(1 downto 0) <= mux2_out;
+
+        busy <= state_bsy_in;
+        cpu_data <= cmem_byte;
+        mem_add <= cc_add;
+        mem_en <= state_mem_en;
 
 end structural;

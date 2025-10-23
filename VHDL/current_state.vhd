@@ -58,8 +58,8 @@ architecture structural of current_state is
     mux_5 : mux2to1 port map (reset, gnd, latch_state(5), I5);
     mux_6 : mux2to1 port map (reset, gnd, latch_state(6), I6);
     mux_7 : mux2to1 port map (reset, gnd, latch_state(7), I7);
-    mux_8 : mux2to1 port map (reset, gnd, latch_state(8), I8)
-;
+    mux_8 : mux2to1 port map (reset, gnd, latch_state(8), I8);
+
     -- Latch all bits for the state
     dff_0 : dff port map (I0, clk, curr_state(0), qbar0); 
     dff_1 : dff port map (I1, clk, curr_state(1), qbar1); 
