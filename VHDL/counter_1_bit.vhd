@@ -12,7 +12,8 @@ entity counter_1_bit is
   port (
     clk     : in  std_logic;
     rst		: in  std_logic;
-    Q       : inout std_logic;
+    Q       : inout std_logic
+  );
 end counter_1_bit;
 
 architecture structural of counter_1_bit is

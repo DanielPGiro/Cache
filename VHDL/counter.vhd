@@ -41,10 +41,11 @@ end component;
 
 component and3
   port (
-    input1	: in  std_logic;
-	input2	: in  std_logic;
-	input3	: in  std_logic;
-    output  : out std_logic);
+    A	: in  std_logic;
+	  B	: in  std_logic;
+	  C	: in  std_logic;
+    Output  : out std_logic
+  );
 end component;
 
 component xor2

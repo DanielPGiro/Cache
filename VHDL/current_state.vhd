@@ -10,6 +10,7 @@ use IEEE.std_logic_1164.all;
 
 entity current_state is
   port (
+    clk : in std_logic;
     latch_state : in std_logic_vector(8 downto 0);
     curr_state  : out std_logic_vector(8 downto 0)
   );
@@ -24,6 +25,7 @@ architecture structural of current_state is
       q   : out std_logic;
       qbar: out std_logic
     );
+  end component;
 
   for dff_0, dff_1, dff_2, dff_3, dff_4, dff_5, dff_6, dff_7, dff_8: dff use entity work.dff(structural);
 
