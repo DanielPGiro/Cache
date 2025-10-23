@@ -13,7 +13,7 @@ entity mux8 is
         sel   : in std_logic;
         s0  : in std_logic_vector(7 downto 0);
         s1  : in std_logic_vector(7 downto 0);
-        y  : out std_logic_vector(7 downto 0);
+        y  : out std_logic_vector(7 downto 0)
     );
 end mux8;
 
@@ -40,4 +40,4 @@ begin
   mux6: mux2to1 port map (sel, s0(6), s1(6), y(6));
   mux7: mux2to1 port map (sel, s0(7), s1(7), y(7));
     
-end structural
+end structural;

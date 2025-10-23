@@ -38,7 +38,7 @@ architecture structural of chip is
             valid      : in std_logic;
             busy_in    : in std_logic;
             valid_enable : out std_logic;
-            cd_md        : out std_logic;
+            CD_MD        : out std_logic;
             mem_enable  : out std_logic;
             latch_enable : out std_logic;
             tag_enable : out std_logic;
@@ -71,7 +71,7 @@ architecture structural of chip is
     end component;
 
 
-    component cache_cell is
+    component cache_cell 
       port (
             data_in : in std_logic;
             clk : in std_logic;
@@ -82,27 +82,27 @@ architecture structural of chip is
     end component;
 
 
-    component mux8 is
+    component mux8 
         port (
             sel : in std_logic;
-            s0: in std_logic(7 downto 0);
+            s0: in std_logic_vector(7 downto 0);
             s1: in std_logic_vector(7 downto 0);
-            y : out std_logic_vector(7 downto 0);
+            y : out std_logic_vector(7 downto 0)
           );
     end component; 
 
 
-    component mux2 is
+    component mux2 
         port (
             sel : in std_logic;
-            s0: in std_logic(1 downto 0);
+            s0: in std_logic_vector(1 downto 0);
             s1: in std_logic_vector(1 downto 0);
-            y : out std_logic_vector(1 downto 0);
+            y : out std_logic_vector(1 downto 0)
           );
     end component; 
 
 
-    component dff is                      
+    component dff                       
       port ( 
         d   : in  std_logic;
         clk : in  std_logic;
@@ -112,7 +112,7 @@ architecture structural of chip is
     end component;
         
     
-    component tag_comparator is
+    component tag_comparator 
       port (
         TA0 : in std_logic; -- TA is the tag in the address
         TA1 : in std_logic;
@@ -126,7 +126,7 @@ architecture structural of chip is
     -- Instantiate components --
     for sm: state_machine use entity work.state_machine(structural);
     for cmem: cache_mem use entity work.cache_mem(structural);
-    for mux0, mux1: mux8 use entity work.mux8(structural);
+    for mux0: mux8 use entity work.mux8(structural);
     for mux2_0: mux2 use entity work.mux2(structural);
     for tag0: tag_comparator use entity work.tag_comparator(structural);
     for dff0: dff use entity work.dff(structural);
@@ -136,8 +136,8 @@ architecture structural of chip is
     signal mux8_out, cmem_byte: std_logic_vector(7 downto 0);
     signal cc_add: std_logic_vector(5 downto 0);  -- latched cpu address
     signal ca_4: std_logic_vector(3 downto 0);  -- cpu address
-    signal cmem_tag, mux2_out: std_logic_vector(1 downto 0);
-    signal state_tag_en, state_valid_en, state_cd_md, state_mem_en, state_latch_en, state_ma, state_ma_sel, state_IE, state_OE, state_bsy_in, state_bsy_out: std_logic;   -- state machine signals
+    signal state_ma, cmem_tag, mux2_out: std_logic_vector(1 downto 0);
+    signal state_tag_en, state_valid_en, state_cd_md, state_mem_en, state_latch_en, state_ma_sel, state_IE, state_OE, state_bsy_in, state_bsy_out: std_logic;   -- state machine signals
     signal cmem_valid, tag_out, cc_rw: std_logic;  -- cache signals
     signal dummy: std_logic;
 
@@ -157,7 +157,7 @@ architecture structural of chip is
         cache_cell6: cache_cell port map (cpu_rd_wrn, clk, state_latch_en, Vdd, cc_rw);  -- latch read/write
 
         -- Smaller component mapping --
-        mux0: mux8 port map (cd_md, cpu_data, mem_data, mux8_out);  -- mux for 2 8-bit input vectors
+        mux0: mux8 port map (state_cd_md, cpu_data, mem_data, mux8_out);  -- mux for 2 8-bit input vectors
         mux2_0: mux2 port map (state_ma_sel, cc_add(1 downto 0), state_ma, mux2_out);  -- mux for 2 2-bit input vectors
         tag0: tag_comparator port map (cc_add(4), cc_add(5), cmem_tag(0), cmem_tag(1), cmem_valid, tag_out);  --tag comparator
         dff0: dff port map (state_bsy_out, clk, state_bsy_in, dummy);  -- latch busy

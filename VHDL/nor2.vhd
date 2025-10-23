@@ -7,7 +7,7 @@ entity nor2 is
     input2 : in std_logic;
     output : out std_logic
   );
-end nor2
+end nor2;
 
 architecture structural of nor2 is
 begin

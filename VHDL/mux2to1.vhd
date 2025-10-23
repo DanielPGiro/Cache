@@ -45,4 +45,4 @@ begin
     and2_2: and2 port map (S0, B, temp2);
     or2_1: or2 port map (temp1, temp2, Y);
 
-end structural
+end structural;

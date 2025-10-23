@@ -13,7 +13,7 @@ entity mux2 is
         sel   : in std_logic;
         s0  : in std_logic_vector(1 downto 0);
         s1  : in std_logic_vector(1 downto 0);
-        y  : out std_logic_vector(1 downto 0);
+        y  : out std_logic_vector(1 downto 0)
     );
 end mux2;
 
@@ -34,4 +34,4 @@ begin
   mux0: mux2to1 port map (sel, s0(0), s1(0), y(0));
   mux1: mux2to1 port map (sel, s0(1), s1(1), y(1));
     
-end structural
+end structural;
