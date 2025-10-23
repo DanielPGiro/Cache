@@ -93,7 +93,7 @@ architecture structural of next_state is
     );
   end component;
 
-  for inv_1, inv_2, inv_3, inv_4: inverter use entity work.inverter(structural);
+  for inv_1, inv_2, inv_3, inv_4, inv_5: inverter use entity work.inverter(structural);
   for nand3_1: nand3 use entity work.nand3(structural);
   for and2_1, and2_2, and2_3, and2_4, and2_6, and2_7: and2 use entity work.and2(structural);
   for and3_1, and3_2 : and3 use entity work.and3(structural);
@@ -101,11 +101,13 @@ architecture structural of next_state is
   for or2_1, or2_2, or2_3: or2 use entity work.or2(structural);
   for nand4_1: nand4 use entity work.nand4(structural);
 
-  signal busy_inv, count_nand, count_and, wait_for_mem, stay_write_mem, leave_write_mem, move_write_mem, stay_mem, reset_inv, decoder_enable, wait_for_mem_2, do_write_mem, move_nx_1 : std_logic;
+  signal busy_inv, count_nand, count_and, wait_for_mem, stay_write_mem, leave_write_mem, move_write_mem, stay_mem, reset_inv, decoder_enable, wait_for_mem_2, do_write_mem, move_nx_1, count_0_bar : std_logic;
 
 
   begin
     inv_4 : inverter port map (reset, reset_inv);
+
+    inv_5 : inverter port map (count(0), count_0_bar);
 
     inv_1 : inverter port map (busy, busy_inv); -- When busy is 0, always in idle state
     or2_3 : or2 port map (busy_inv, reset, next_state(0));
@@ -114,7 +116,7 @@ architecture structural of next_state is
     and2_1 : and2 port map (curr_state(1), reset_inv, decoder_enable); 
     -- Next_state(1) will go directly into the input enable to the latch inputs.
     -- The decoder must be enabled to get the correct state on the next negative edge after start goes low
-    decoder_1 : decoder_2_4 port map (decoder_enable, rd_wr, valid, next_state(4), next_state(3), next_state(5), next_state(2)); -- Move to read/write hit/miss if we have finished latching inputs
+    decoder_1 : decoder_2_4 port map (decoder_enable, rd_wr, valid, next_state(4), next_state(5), next_state(3), next_state(2)); -- Move to read/write hit/miss if we have finished latching inputs
 
     nand3_1: nand3 port map (count(0), count(1), count(2), count_nand); -- Produces 1 when count is not 8 (7)
     inv_2: inverter port map (count_nand, count_and); -- Produces 1 when count is 8 (7)

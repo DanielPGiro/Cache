@@ -25,6 +25,7 @@ architecture test of state_machine_tb is
       CD_MD      : out std_logic; -- High we access cpu data low we access memory data
       mem_enable : out std_logic;
       MA         : out std_logic_vector(1 downto 0);
+      states     : out std_logic_vector(8 downto 0);
       MA_select  : out std_logic; -- When 1, MA goes through, when 0, CA goes through
       busy_out   : out std_logic;
       IE         : out std_logic;
@@ -32,13 +33,25 @@ architecture test of state_machine_tb is
     );
   end component;
 
+  component dff
+    port (
+      d : in std_logic;
+      clk : in std_logic;
+      q : out std_logic;
+      qbar : out std_logic
+    );
+  end component; 
+
   for state_machine_0: state_machine use entity work.state_machine(structural);
+  for dff_0 : dff use entity work.dff(structural);
 
 
 
   signal start, clk, reset, vdd, gnd, rd_wr, valid, busy_in, latch_enable, tag_enable, valid_enable, CD_MD, mem_enable, MA_select, busy_out, IE, OE : std_logic;
   signal MA : std_logic_vector(1 downto 0);
   signal CA : std_logic_vector(5 downto 0);
+  signal qbar : std_logic;
+  signal states : std_logic_vector(8 downto 0);
 
   procedure print_output is
     variable outline: line;
@@ -82,7 +95,8 @@ architecture test of state_machine_tb is
   end print_output;
 
 begin
-  state_machine_0: state_machine port map (rd_wr, CA, start, clk, reset, vdd, gnd, valid, busy_in, latch_enable, tag_enable, valid_enable, CD_MD, mem_enable, MA, MA_select, busy_out, IE, OE);
+  state_machine_0: state_machine port map (rd_wr, CA, start, clk, reset, vdd, gnd, valid, busy_in, latch_enable, tag_enable, valid_enable, CD_MD, mem_enable, MA, states, MA_select, busy_out, IE, OE);
+  dff_0: dff port map (busy_out, clk, busy_in, qbar);
 
 clock : process
 begin
@@ -99,144 +113,156 @@ begin
   reset <= '1';
   CA <= "111000";
   -- busy_in <= busy_out; -- probably wont work
-  busy_in <= '0';
+  --busy_in <= '0';
   print_output;
-  wait until falling_edge(clk);
+  wait until rising_edge(clk);
+
+  print_output;
+  wait until rising_edge(clk);
 
   reset <= '0';
   print_output;
-  wait until falling_edge(clk);
+  wait until rising_edge(clk);
 
   start <= '1';
   print_output;
-  wait until rising_edge(clk);
+  wait until falling_edge(clk);
 
   rd_wr <= '1'; -- read hit
   valid <= '1';
-  busy_in <= '1';
-  wait until falling_edge(clk);
+  --busy_in <= '1';
+  wait until rising_edge(clk);
 
   start <= '0';
   print_output;
+  wait until falling_edge(clk);
+
+  --busy_in <= '0';
+  print_output;
   wait until rising_edge(clk);
 
-  busy_in <= '0';
   print_output;
-  wait until falling_edge(clk);
+  wait until rising_edge(clk);
 
   print_output;
-  wait until falling_edge(clk);
+  wait until rising_edge(clk);
 
   start <= '1';
   print_output;
-  wait until rising_edge(clk);
+  wait until falling_edge(clk);
 
   rd_wr <= '0'; -- write hit
   valid <= '1';
-  busy_in <= '1';
+  --busy_in <= '1';
   print_output;
-  wait until falling_edge(clk);
+  wait until rising_edge(clk);
 
   start <= '0';
   print_output;
-  wait until rising_edge(clk);
+  wait until falling_edge(clk);
   
   print_output;
-  wait until falling_edge(clk);
+  wait until rising_edge(clk);
 
-  busy_in <= '0';
+  --busy_in <= '0';
   print_output;
-  wait until falling_edge(clk);
+  wait until rising_edge(clk);
+
+  print_output;
+  wait until rising_edge(clk);
 
   start <= '1';
   print_output;
-  wait until rising_edge(clk);
+  wait until falling_edge(clk);
 
   rd_wr <= '0'; -- write miss
   valid <= '0';
-  wait until falling_edge(clk);
+  wait until rising_edge(clk);
 
   start <= '0';
+  wait until falling_edge(clk);
+
+  print_output;
+  wait until rising_edge(clk);
+
+  --busy_in <= '0';
+  print_output;
   wait until rising_edge(clk);
 
   print_output;
-  wait until falling_edge(clk);
-
-  busy_in <= '0';
-  print_output;
-  wait until falling_edge(clk);
+  wait until rising_edge(clk);
 
   start <= '1';
   print_output;
-  wait until rising_edge(clk);
+  wait until falling_edge(clk);
 
   rd_wr <= '1'; -- read miss
   valid <= '0';
-  busy_in <= '1';
+  --busy_in <= '1';
+  print_output;
+  wait until rising_edge(clk);
+
+  start <= '0';
   print_output;
   wait until falling_edge(clk);
 
-  start <= '0';
+  print_output;
+  wait until rising_edge(clk); -- mem enable should go high
+
+  print_output;
+  wait until rising_edge(clk); -- mem enable should go low
+
   print_output;
   wait until rising_edge(clk);
 
   print_output;
-  wait until falling_edge(clk); -- mem enable should go high
+  wait until rising_edge(clk);
 
   print_output;
-  wait until falling_edge(clk); -- mem enable should go low
+  wait until rising_edge(clk);
 
   print_output;
-  wait until falling_edge(clk);
+  wait until rising_edge(clk);
 
   print_output;
-  wait until falling_edge(clk);
+  wait until rising_edge(clk);
 
   print_output;
-  wait until falling_edge(clk);
+  wait until rising_edge(clk);
 
   print_output;
-  wait until falling_edge(clk);
+  wait until rising_edge(clk); -- Should end mem wait 
 
   print_output;
-  wait until falling_edge(clk);
+  wait until rising_edge(clk); -- IE High
 
   print_output;
-  wait until falling_edge(clk);
+  wait until rising_edge(clk); -- IE low
 
   print_output;
-  wait until falling_edge(clk); -- Should end mem wait 
+  wait until rising_edge(clk); -- IE high
 
   print_output;
-  wait until falling_edge(clk); -- IE High
+  wait until rising_edge(clk); -- IE low
 
   print_output;
-  wait until falling_edge(clk); -- IE low
+  wait until rising_edge(clk); -- IE high
 
   print_output;
-  wait until falling_edge(clk); -- IE high
+  wait until rising_edge(clk); -- IE low
 
   print_output;
-  wait until falling_edge(clk); -- IE low
+  wait until rising_edge(clk); -- IE high
 
   print_output;
-  wait until falling_edge(clk); -- IE high
+  wait until rising_edge(clk); -- IE low
 
   print_output;
-  wait until falling_edge(clk); -- IE low
+  --busy_in <= '0';
+  wait until rising_edge(clk); -- OE high
 
   print_output;
-  wait until falling_edge(clk); -- IE high
-
-  print_output;
-  wait until falling_edge(clk); -- IE low
-
-  print_output;
-  busy_in <= '0';
-  wait until falling_edge(clk); -- OE high
-
-  print_output;
-  wait until falling_edge(clk); -- OE low
+  wait until rising_edge(clk); -- OE low
 
 
 end process sim_process;
