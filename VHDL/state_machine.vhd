@@ -49,6 +49,9 @@ architecture structural of state_machine is
   component current_state
     port (
       clk : in std_logic;
+      gnd : in std_logic;
+      vdd : in std_logic;
+      reset : in std_logic;
       latch_state : in std_logic_vector(8 downto 0);
       curr_state : out std_logic_vector(8 downto 0)
     );
@@ -150,7 +153,7 @@ architecture structural of state_machine is
   begin
 
     next_state_1: next_state port map (busy_in, start, reset, curr_count, valid, cpu_rd_wrn, curr_state_sig, next_state_sig);
-    curr_state_1: current_state port map (clk, next_state_sig, curr_state_sig);
+    curr_state_1: current_state port map (clk, gnd, vdd, reset, next_state_sig, curr_state_sig);
 
     counter_1 : counter port map (clk, curr_state_sig(5), curr_count);
 

@@ -137,9 +137,14 @@ begin
   print_output;
   wait until falling_edge(clk);
 
+  start <= '0';
+  print_output;
+  wait until rising_edge(clk);
+  
   print_output;
   wait until falling_edge(clk);
 
+  busy_in <= '0';
   print_output;
   wait until falling_edge(clk);
 
