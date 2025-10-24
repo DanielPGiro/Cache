@@ -21,6 +21,11 @@ entity chip is
       Gnd        : in  std_logic;
       busy       : out std_logic;
       mem_en     : out std_logic;
+      OE         : out std_logic;
+      byte_out   : out std_logic_vector(7 downto 0);
+      states     : out std_logic_vector(8 downto 0);
+      CA_4_0 : out std_logic_vector(3 downto 0);
+      Ie : out std_logic;
       mem_add    : out std_logic_vector(5 downto 0)
     );
 end chip;
@@ -43,6 +48,7 @@ architecture structural of chip is
             CD_MD        : out std_logic;
             mem_enable  : out std_logic;
             MA         : out std_logic_vector(1 downto 0);
+            states : out std_logic_vector (8 downto 0);
             MA_select  : out std_logic;
             busy_out   : out std_logic;
             IE         : out std_logic;
@@ -59,10 +65,10 @@ architecture structural of chip is
             tag_enable : in std_logic; -- High for tag change
             valid_set : in std_logic; 
             valid_enable : in std_logic;
-            VDD : in std_logic;
             clk : in std_logic;
             IE : in std_logic; -- Controlled by state machine, mapped to every reg
             OE : in std_logic;
+            VDD : in std_logic;
             reset : in std_logic;
             byte_out : out std_logic_vector(7 downto 0); -- For read
             valid_out : out std_logic;
@@ -79,7 +85,7 @@ architecture structural of chip is
             OE : in std_logic; -- Output enable
             data_out : out std_logic
          );
-    end component;
+      end component;
 
 
     component mux8 
@@ -102,6 +108,9 @@ architecture structural of chip is
     end component; 
 
 
+   
+
+        -- Cpu address --
     component dff                       
       port ( 
         d   : in  std_logic;
@@ -122,6 +131,16 @@ architecture structural of chip is
         output : out std_logic
       );
     end component;
+
+    component reg
+      port (
+        bit_in : in std_logic_vector(7 downto 0);
+        clk : in std_logic;
+        IE : in std_logic;
+        OE : in std_logic;
+        bit_out : out std_logic_vector(7 downto 0)
+      );
+    end component;
  
     -- Instantiate components --
     for sm: state_machine use entity work.state_machine(structural);
@@ -131,9 +150,9 @@ architecture structural of chip is
     for tag0: tag_comparator use entity work.tag_comparator(structural);
     for dff0: dff use entity work.dff(structural);
     for cache_cell0, cache_cell1, cache_cell2, cache_cell3, cache_cell4, cache_cell5, cache_cell6: cache_cell use entity work.cache_cell(structural);
-
+    for reg_1 : reg use entity work.reg(structural);
     -- Signals --
-    signal mux8_out, cmem_byte: std_logic_vector(7 downto 0);
+    signal mux8_out, cmem_byte, cc_data: std_logic_vector(7 downto 0);
     signal cc_add: std_logic_vector(5 downto 0);  -- latched cpu address
     signal ca_4: std_logic_vector(3 downto 0);  -- cpu address
     signal state_ma, cmem_tag, mux2_out: std_logic_vector(1 downto 0);
@@ -144,8 +163,9 @@ architecture structural of chip is
         
     begin 
         -- State machine and Cache memory mapping --
-        sm: state_machine port map (cc_rw, cc_add, start, clk, reset, Vdd, Gnd, tag_out, state_bsy_in, state_latch_en, state_tag_en, state_valid_en, state_cd_md, state_mem_en, state_ma, state_ma_sel, state_bsy_out, state_IE, state_OE);
-        cmem: cache_mem port map (mux8_out, ca_4, cc_add(5 downto 4), state_tag_en, state_valid_en, state_valid_en, Vdd, clk, state_IE, state_OE, reset, cmem_byte, cmem_valid, cmem_tag);
+        sm: state_machine port map (cc_rw, cc_add, start, clk, reset, Vdd, Gnd, tag_out, state_bsy_in, state_latch_en, state_tag_en, state_valid_en, state_cd_md, state_mem_en, state_ma, states, state_ma_sel, state_bsy_out, state_IE, state_OE);
+        cmem: cache_mem port map (mux8_out, ca_4, cc_add(5 downto 4), state_tag_en, state_valid_en, state_valid_en, clk, state_IE, state_OE, Vdd, reset, cmem_byte, cmem_valid, cmem_tag);
+
 
         -- Latch CPU Address and the Read/Write -- 
         cache_cell0: cache_cell port map (cpu_add(0), clk, state_latch_en, Vdd, cc_add(0));  -- cpu address latching
@@ -156,8 +176,10 @@ architecture structural of chip is
         cache_cell5: cache_cell port map (cpu_add(5), clk, state_latch_en, Vdd, cc_add(5));
         cache_cell6: cache_cell port map (cpu_rd_wrn, clk, state_latch_en, Vdd, cc_rw);  -- latch read/write
 
+        reg_1 : reg port map (cpu_data, clk, state_latch_en, VDD, cc_data);
+
         -- Smaller component mapping --
-        mux0: mux8 port map (state_cd_md, cpu_data, mem_data, mux8_out);  -- mux for 2 8-bit input vectors
+        mux0: mux8 port map (state_cd_md, cc_data, mem_data, mux8_out);  -- mux for 2 8-bit input vectors
         mux2_0: mux2 port map (state_ma_sel, state_ma, cc_add(1 downto 0),  mux2_out);  -- mux for 2 2-bit input vectors
         tag0: tag_comparator port map (cc_add(4), cc_add(5), cmem_tag(0), cmem_tag(1), cmem_valid, tag_out);  --tag comparator
         dff0: dff port map (state_bsy_out, clk, state_bsy_in, dummy);  -- latch busy
@@ -170,5 +192,8 @@ architecture structural of chip is
         cpu_data <= cmem_byte;
         mem_add <= cc_add;
         mem_en <= state_mem_en;
-
+        OE <= state_OE;
+        byte_out <= cmem_byte;
+        CA_4_0 <= ca_4;
+        IE <= state_IE;
 end structural;

@@ -2,7 +2,7 @@ library IEEE;
 library STD;
 use IEEE.std_logic_1164.all;
 
-entity or6 is
+entity or7 is
   port (
       input1 : in std_logic;
       input2 : in std_logic;
@@ -10,12 +10,13 @@ entity or6 is
       input4 : in std_logic;
       input5 : in std_logic;
       input6 : in std_logic;
+      input7 : in std_logic;
       output : out std_logic
     );
-end or6;
+end or7;
 
-architecture structural of or6 is
+architecture structural of or7 is
 begin
-  output <= input1 or input2 or input3 or input4 or input5 or input6;
+  output <= input1 or input2 or input3 or input4 or input5 or input6 or input7;
 
 end structural;

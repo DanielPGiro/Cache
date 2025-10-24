@@ -24,7 +24,7 @@ entity state_machine is
     CD_MD      : out std_logic; -- High we access cpu data low we access memory data
     mem_enable : out std_logic;
     MA         : out std_logic_vector(1 downto 0);
-   -- states     : out std_logic_vector(8 downto 0); -- debug
+   states     : out std_logic_vector(8 downto 0); -- debug
     MA_select  : out std_logic; -- When 1, MA goes through, when 0, CA goes through
     busy_out   : out std_logic;
     IE         : out std_logic;
@@ -121,7 +121,7 @@ architecture structural of state_machine is
     );
   end component;
 
-  component or6
+  component or7
     port (
       input1 : in std_logic;
       input2 : in std_logic;
@@ -129,6 +129,7 @@ architecture structural of state_machine is
       input4 : in std_logic;
       input5 : in std_logic;
       input6 : in std_logic;
+      input7 : in std_logic;
       output : out std_logic
     );
   end component;
@@ -147,9 +148,11 @@ architecture structural of state_machine is
   for mux_0 : mux2to1 use entity work.mux2to1(structural);
   for or2_1, or2_2: or2 use entity work.or2(structural);
   for and2_1: and2 use entity work.and2(structural);
-  for inv_1: inverter use entity work.inverter(structural);
+  for inv_1, inv_2: inverter use entity work.inverter(structural);
 
   for counter_1: counter use entity work.counter(structural);
+
+  for or7_1 : or7 use entity work.or7(structural);
 
   for counter_1_bit_1: counter_1_bit use entity work.counter_1_bit(structural);
   for counter_2_bit_1: counter_2_bit use entity work.counter_2_bit(structural);
@@ -158,7 +161,7 @@ architecture structural of state_machine is
   signal curr_state_sig, next_state_sig : std_logic_vector(8 downto 0);
   signal curr_count : std_logic_vector(3 downto 0);
   signal mem_write_inv : std_logic;
-  signal Q_1_bit, mem_wr_en : std_logic;
+  signal Q_1_bit, Q_1_inv, mem_wr_en : std_logic;
   signal Q_2_bit : std_logic_vector(1 downto 0);
   signal busy_out_0 : std_logic;
   
@@ -172,12 +175,14 @@ architecture structural of state_machine is
     counter_1_bit_1 : counter_1_bit port map (clk, next_state_sig(5), Q_1_bit); -- Reset is asynch so 0 will be clocked at same time we enter the write mem state
     counter_2_bit_1 : counter_2_bit port map (Q_1_bit, next_state_sig(5), Q_2_bit); -- Increment the byte address by 1 when input enabe is high, this new address shoud be clocked on the following clock cycle
 
+    inv_2: inverter port map(Q_1_bit, Q_1_inv);
+
     or2_1: or2 port map (curr_state_sig(2), curr_state_sig(8), OE); -- Output gets enabled when we are in a read state
     
     and2_1: and2 port map (curr_state_sig(7), Q_1_bit, mem_wr_en);
     or2_2: or2 port map (curr_state_sig(3), mem_wr_en, IE); -- IE if read hit or (writing mem data and counter is 1)
 
-    or6_1: or6 port map (next_state_sig(1), next_state_sig(3), next_state_sig(4), next_state_sig(5), next_state_sig(6), next_state_sig(7), busy_out_0);
+    or7_1: or7 port map (next_state_sig(1), next_state_sig(3), next_state_sig(4), next_state_sig(5), next_state_sig(6), next_state_sig(7), next_state_sig(8), busy_out_0);
 
     mux_0: mux2to1 port map (reset, gnd, busy_out_0, busy_out);
 
@@ -196,7 +201,7 @@ architecture structural of state_machine is
 
     MA <= Q_2_bit;
 
-    --states <= curr_state_sig;
+    states <= curr_state_sig;
     
 
 end structural;

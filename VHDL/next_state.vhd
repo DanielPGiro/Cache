@@ -93,22 +93,25 @@ architecture structural of next_state is
     );
   end component;
 
-  for inv_1, inv_2, inv_3, inv_4: inverter use entity work.inverter(structural);
+  for inv_1, inv_2, inv_3, inv_4, inv_5: inverter use entity work.inverter(structural);
   for nand3_1: nand3 use entity work.nand3(structural);
-  for and2_1, and2_2, and2_3, and2_4, and2_6, and2_7: and2 use entity work.and2(structural);
+  for and2_1, and2_2, and2_3, and2_4, and2_5, and2_6, and2_7: and2 use entity work.and2(structural);
   for and3_1, and3_2 : and3 use entity work.and3(structural);
   for decoder_1: decoder_2_4 use entity work.decoder_2_4(structural);
   for or2_1, or2_2, or2_3: or2 use entity work.or2(structural);
   for nand4_1: nand4 use entity work.nand4(structural);
 
-  signal busy_inv, count_nand, count_and, wait_for_mem, stay_write_mem, leave_write_mem, move_write_mem, stay_mem, reset_inv, decoder_enable, wait_for_mem_2, do_write_mem, move_nx_1: std_logic;
+  signal busy_inv, count_nand, count_and, wait_for_mem, stay_write_mem, leave_write_mem, move_write_mem, stay_mem, reset_inv, decoder_enable, wait_for_mem_2, do_write_mem, move_nx_1, start_inv, not_idle: std_logic;
 
 
   begin
     inv_4 : inverter port map (reset, reset_inv);
+    inv_5 : inverter port map (start, start_inv);
 
     inv_1 : inverter port map (busy, busy_inv); -- When busy is 0, always in idle state
-    or2_3 : or2 port map (busy_inv, reset, next_state(0));
+    or2_3 : or2 port map (busy_inv, reset, not_idle);
+
+    and2_5 : and2 port map (start_inv, not_idle, next_state(0));
 
     and3_1 : and3 port map (curr_state(0), start, reset_inv, move_nx_1); -- latch inputs when we are idling and get the start signal
     and2_1 : and2 port map (curr_state(1), reset_inv, decoder_enable); 
