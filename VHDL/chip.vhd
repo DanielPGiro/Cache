@@ -144,7 +144,7 @@ architecture structural of chip is
         
     begin 
         -- State machine and Cache memory mapping --
-        sm: state_machine port map (cpu_rd_wrn, cc_add, start, clk, reset, Vdd, Gnd, tag_out, state_bsy_in, state_latch_en, state_tag_en, state_valid_en, state_cd_md, state_mem_en, state_ma, state_ma_sel, state_bsy_out, state_IE, state_OE);
+        sm: state_machine port map (cc_rw, cc_add, start, clk, reset, Vdd, Gnd, tag_out, state_bsy_in, state_latch_en, state_tag_en, state_valid_en, state_cd_md, state_mem_en, state_ma, state_ma_sel, state_bsy_out, state_IE, state_OE);
         cmem: cache_mem port map (mux8_out, ca_4, cc_add(5 downto 4), state_tag_en, state_valid_en, state_valid_en, Vdd, clk, state_IE, state_OE, reset, cmem_byte, cmem_valid, cmem_tag);
 
         -- Latch CPU Address and the Read/Write -- 
@@ -158,7 +158,7 @@ architecture structural of chip is
 
         -- Smaller component mapping --
         mux0: mux8 port map (state_cd_md, cpu_data, mem_data, mux8_out);  -- mux for 2 8-bit input vectors
-        mux2_0: mux2 port map (state_ma_sel, cc_add(1 downto 0), state_ma, mux2_out);  -- mux for 2 2-bit input vectors
+        mux2_0: mux2 port map (state_ma_sel, state_ma, cc_add(1 downto 0),  mux2_out);  -- mux for 2 2-bit input vectors
         tag0: tag_comparator port map (cc_add(4), cc_add(5), cmem_tag(0), cmem_tag(1), cmem_valid, tag_out);  --tag comparator
         dff0: dff port map (state_bsy_out, clk, state_bsy_in, dummy);  -- latch busy
 
