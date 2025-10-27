@@ -39,12 +39,13 @@ architecture structural of current_state is
     );
   end component;
 
-  for dff_0, dff_1, dff_2, dff_3, dff_4, dff_5, dff_6, dff_7, dff_8: dff use entity work.dff(structural);
+  for dff_0, dff_1, dff_2, dff_3, dff_4, dff_5, dff_6, dff_7, dff_8, dff_9: dff use entity work.dff(structural);
   for mux_0, mux_1, mux_2, mux_3, mux_4, mux_5, mux_6, mux_7, mux_8: mux2to1 use entity work.mux2to1(structural);
 
   signal state0, state1, state2, state3, state4, state5, state6, state7, state8: std_logic;
-  signal qbar0, qbar1, qbar2, qbar3, qbar4, qbar5, qbar6, qbar7, qbar8: std_logic;
+  signal qbar0, qbar1, qbar2, qbar3, qbar4, qbar5, qbar6, qbar7, qbar8, qbar9: std_logic;
   signal I0, I1, I2, I3, I4, I5, I6, I7, I8 : std_logic;
+  signal Q8 : std_logic;
 
 
   --NOTE: Start and busy inputs have not been used yet--
@@ -69,7 +70,8 @@ architecture structural of current_state is
     dff_5 : dff port map (I5, clk, curr_state(5), qbar5); 
     dff_6 : dff port map (I6, clk, curr_state(6), qbar6); 
     dff_7 : dff port map (I7, clk, curr_state(7), qbar7); 
-    dff_8 : dff port map (I8, clk, curr_state(8), qbar8); 
+    dff_8 : dff port map (I8, clk, Q8, qbar8); 
+    dff_9 : dff port map (Q8, clk, curr_state(8), qbar9);
 
     -- Control Signals (OE and IE) for each state
     -- Idle

@@ -21,11 +21,11 @@ entity chip is
       Gnd        : in  std_logic;
       busy       : out std_logic;
       mem_en     : out std_logic;
-      OE         : out std_logic;
-      byte_out   : out std_logic_vector(7 downto 0);
-      states     : out std_logic_vector(8 downto 0);
-      CA_4_0 : out std_logic_vector(3 downto 0);
-      Ie : out std_logic;
+      --OE         : out std_logic;
+      --byte_out   : out std_logic_vector(7 downto 0);
+      --states     : out std_logic_vector(8 downto 0);
+      --CA_4_0 : out std_logic_vector(3 downto 0);
+      --Ie : out std_logic;
       mem_add    : out std_logic_vector(5 downto 0)
     );
 end chip;
@@ -48,7 +48,7 @@ architecture structural of chip is
             CD_MD        : out std_logic;
             mem_enable  : out std_logic;
             MA         : out std_logic_vector(1 downto 0);
-            states : out std_logic_vector (8 downto 0);
+            --states : out std_logic_vector (8 downto 0);
             MA_select  : out std_logic;
             busy_out   : out std_logic;
             IE         : out std_logic;
@@ -141,6 +141,22 @@ architecture structural of chip is
         bit_out : out std_logic_vector(7 downto 0)
       );
     end component;
+
+    component tx
+      port (
+        sel : in std_logic;
+        selnot : in std_logic;
+        input : in std_logic;
+        output : out std_logic
+      );
+    end component;
+
+    component inverter
+      port (
+        input : in std_logic;
+        output : out std_logic
+      );
+    end component;
  
     -- Instantiate components --
     for sm: state_machine use entity work.state_machine(structural);
@@ -151,6 +167,10 @@ architecture structural of chip is
     for dff0: dff use entity work.dff(structural);
     for cache_cell0, cache_cell1, cache_cell2, cache_cell3, cache_cell4, cache_cell5, cache_cell6: cache_cell use entity work.cache_cell(structural);
     for reg_1 : reg use entity work.reg(structural);
+
+    for inv_1 : inverter use entity work.inverter(structural);
+    for tx_0, tx_1, tx_2, tx_3, tx_4, tx_5: tx use entity work.tx(structural);
+
     -- Signals --
     signal mux8_out, cmem_byte, cc_data: std_logic_vector(7 downto 0);
     signal cc_add: std_logic_vector(5 downto 0);  -- latched cpu address
@@ -158,13 +178,20 @@ architecture structural of chip is
     signal state_ma, cmem_tag, mux2_out: std_logic_vector(1 downto 0);
     signal state_tag_en, state_valid_en, state_cd_md, state_mem_en, state_latch_en, state_ma_sel, state_IE, state_OE, state_bsy_in, state_bsy_out: std_logic;   -- state machine signals
     signal cmem_valid, tag_out, cc_rw: std_logic;  -- cache signals
-    signal dummy: std_logic;
-
+    signal dummy, mem_enable_inv: std_logic;
         
     begin 
         -- State machine and Cache memory mapping --
-        sm: state_machine port map (cc_rw, cc_add, start, clk, reset, Vdd, Gnd, tag_out, state_bsy_in, state_latch_en, state_tag_en, state_valid_en, state_cd_md, state_mem_en, state_ma, states, state_ma_sel, state_bsy_out, state_IE, state_OE);
-        cmem: cache_mem port map (mux8_out, ca_4, cc_add(5 downto 4), state_tag_en, state_valid_en, state_valid_en, clk, state_IE, state_OE, Vdd, reset, cmem_byte, cmem_valid, cmem_tag);
+        sm: state_machine port map (cc_rw, cc_add, start, clk, reset, Vdd, Gnd, tag_out, state_bsy_in, state_latch_en, state_tag_en, state_valid_en, state_cd_md, state_mem_en, state_ma, state_ma_sel, state_bsy_out, state_IE, state_OE);
+        cmem: cache_mem port map (mux8_out, ca_4, cc_add(5 downto 4), state_tag_en, Vdd, state_valid_en, clk, state_IE, state_OE, Vdd, reset, cmem_byte, cmem_valid, cmem_tag);
+
+        inv_1 : inverter port map (state_mem_en, mem_enable_inv);
+        tx_0 : tx port map (state_mem_en, mem_enable_inv, cc_add(0), mem_add(0));
+        tx_1 : tx port map (state_mem_en, mem_enable_inv, cc_add(1), mem_add(1));
+        tx_2 : tx port map (state_mem_en, mem_enable_inv, cc_add(2), mem_add(2));
+        tx_3 : tx port map (state_mem_en, mem_enable_inv, cc_add(3), mem_add(3));
+        tx_4 : tx port map (state_mem_en, mem_enable_inv, cc_add(4), mem_add(4));
+        tx_5 : tx port map (state_mem_en, mem_enable_inv, cc_add(5), mem_add(5));
 
 
         -- Latch CPU Address and the Read/Write -- 
@@ -190,10 +217,10 @@ architecture structural of chip is
 
         busy <= state_bsy_in;
         cpu_data <= cmem_byte;
-        mem_add <= cc_add;
+        --mem_add <= cc_add;
         mem_en <= state_mem_en;
-        OE <= state_OE;
-        byte_out <= cmem_byte;
-        CA_4_0 <= ca_4;
-        IE <= state_IE;
+        --OE <= state_OE;
+        --byte_out <= cmem_byte;
+        --CA_4_0 <= ca_4;
+        --IE <= state_IE;
 end structural;

@@ -24,7 +24,7 @@ entity state_machine is
     CD_MD      : out std_logic; -- High we access cpu data low we access memory data
     mem_enable : out std_logic;
     MA         : out std_logic_vector(1 downto 0);
-   states     : out std_logic_vector(8 downto 0); -- debug
+   --states     : out std_logic_vector(8 downto 0); -- debug
     MA_select  : out std_logic; -- When 1, MA goes through, when 0, CA goes through
     busy_out   : out std_logic;
     IE         : out std_logic;
@@ -142,6 +142,17 @@ architecture structural of state_machine is
     );
   end component;
 
+  component dff_p
+    port (
+      d : in std_logic;
+      clk : in std_logic;
+      q : out std_logic;
+      qbar : out std_logic
+    );
+  end component;
+
+  for dff_p_0 : dff_p use entity work.dff_p(structural);
+
   for next_state_1: next_state use entity work.next_state(structural);
   for curr_state_1: current_state use entity work.current_state(structural);
   
@@ -163,7 +174,7 @@ architecture structural of state_machine is
   signal mem_write_inv : std_logic;
   signal Q_1_bit, Q_1_inv, mem_wr_en : std_logic;
   signal Q_2_bit : std_logic_vector(1 downto 0);
-  signal busy_out_0 : std_logic;
+  signal busy_out_0, IE_pos, qbar : std_logic;
   
   begin
 
@@ -179,8 +190,10 @@ architecture structural of state_machine is
 
     or2_1: or2 port map (curr_state_sig(2), curr_state_sig(8), OE); -- Output gets enabled when we are in a read state
     
-    and2_1: and2 port map (curr_state_sig(7), Q_1_bit, mem_wr_en);
-    or2_2: or2 port map (curr_state_sig(3), mem_wr_en, IE); -- IE if read hit or (writing mem data and counter is 1)
+    and2_1: and2 port map (curr_state_sig(7), Q_1_inv, mem_wr_en);
+    or2_2: or2 port map (curr_state_sig(3), mem_wr_en, IE_pos); -- IE if read hit or (writing mem data and counter is 1)
+
+    dff_p_0 : dff_p port map (IE_pos, clk, IE, qbar);
 
     or7_1: or7 port map (next_state_sig(1), next_state_sig(3), next_state_sig(4), next_state_sig(5), next_state_sig(6), next_state_sig(7), next_state_sig(8), busy_out_0);
 
@@ -201,7 +214,7 @@ architecture structural of state_machine is
 
     MA <= Q_2_bit;
 
-    states <= curr_state_sig;
+    --states <= curr_state_sig;
     
 
 end structural;

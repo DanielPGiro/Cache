@@ -13,7 +13,7 @@ entity dff is
          clk : in  std_logic;
          q   : out std_logic;
          qbar: out std_logic); 
-end dff;                          
+end dff;
 
 architecture structural of dff is 
 

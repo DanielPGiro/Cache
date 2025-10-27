@@ -28,11 +28,11 @@ architecture test of chip_test is
       Gnd        : in  std_logic;
       busy	 : out std_logic;
       mem_en     : out std_logic;
-      OE         : out std_logic;
-      byte_out : out std_logic_vector(7 downto 0);
-      states : out std_logic_vector(8 downto 0);
-      CA_4_0 : out std_logic_vector(3 downto 0);
-      IE : out std_logic;
+      --OE         : out std_logic;
+      --byte_out : out std_logic_vector(7 downto 0);
+      --states : out std_logic_vector(8 downto 0);
+      --CA_4_0 : out std_logic_vector(3 downto 0);
+      --IE : out std_logic;
       mem_add    : out std_logic_vector(5 downto 0)
     );
   end component;
@@ -46,11 +46,11 @@ architecture test of chip_test is
   signal cpu_add, mem_add: std_logic_vector(5 downto 0);
   signal cpu_rd_wrn, reset, clk, start, clock, busy, mem_en: std_logic;
 
-  signal OE : std_logic;
-  signal byte_out : std_logic_vector(7 downto 0);
-  signal states : std_logic_vector(8 downto 0);
-  signal CA_4 : std_logic_vector(3 downto 0);
-  signal IE : std_logic;
+  --signal OE : std_logic;
+  --signal byte_out : std_logic_vector(7 downto 0);
+  --signal states : std_logic_vector(8 downto 0);
+  --signal CA_4 : std_logic_vector(3 downto 0);
+  --signal IE : std_logic;
 
   signal clk_count: integer:=0;
 
@@ -103,7 +103,7 @@ begin
   Gnd <= '0';
   clk <= clock;
 
-  c1 : chip port map (cpu_add, cpu_data, cpu_rd_wrn, start, clk, reset, mem_data, Vdd, Gnd, busy, mem_en, OE, byte_out, states, CA_4, IE, mem_add);
+  c1 : chip port map (cpu_add, cpu_data, cpu_rd_wrn, start, clk, reset, mem_data, Vdd, Gnd, busy, mem_en, mem_add);
 
   clking : process
   begin
