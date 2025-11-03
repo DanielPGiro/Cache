@@ -10,7 +10,7 @@ use IEEE.std_logic_1164.all;
 entity state_machine is
   port( 
     cpu_rd_wrn : in  std_logic;    
-    cpu_add    : in std_logic_vector(5 downto 0);  -- for tag
+    --cpu_add    : in std_logic_vector(5 downto 0);  -- for tag
     start      : in  std_logic;
     clk        : in  std_logic;
     reset      : in  std_logic;
@@ -19,13 +19,13 @@ entity state_machine is
     valid      : in std_logic;
     busy_in    : in std_logic;
     latch_enable : out std_logic;
-    tag_enable : out std_logic;
-    valid_enable : out std_logic;
+    tag_valid_MA_enable : out std_logic;
+    --valid_enable : out std_logic;
     CD_MD      : out std_logic; -- High we access cpu data low we access memory data
     mem_enable : out std_logic;
     MA         : out std_logic_vector(1 downto 0);
    --states     : out std_logic_vector(8 downto 0); -- debug
-    MA_select  : out std_logic; -- When 1, MA goes through, when 0, CA goes through
+    --MA_select  : out std_logic; -- When 1, MA goes through, when 0, CA goes through
     busy_out   : out std_logic;
     IE         : out std_logic;
     OE         : out std_logic
@@ -203,14 +203,14 @@ architecture structural of state_machine is
 
     latch_enable <= next_state_sig(1); -- For timing rquirements, we latch the inputs on the negative edge of start going low (one cycle)
 
-    tag_enable <= curr_state_sig(7); -- Write the tag and valid when writing from memory
-    valid_enable <= curr_state_sig(7);
+    tag_valid_MA_enable <= curr_state_sig(7); -- Write the tag and valid when writing from memory
+    --valid_enable <= curr_state_sig(7);
 
     CD_MD <= mem_write_inv; -- When not in meme write state this is a one which means it will always pull cpu data
 
     mem_enable <= curr_state_sig(5); -- Output mem enable for one clock cycle before waiting for memory
 
-    MA_select <= curr_state_sig(7);
+    --MA_select <= curr_state_sig(7);
 
     MA <= Q_2_bit;
 
