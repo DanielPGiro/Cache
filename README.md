@@ -1,7 +1,7 @@
 # Project: Direct Mapped Cache
 ## Contributers: Daniel Giro, Ian Lane
 ### Introduction
-This project is direct mapped cache created in VHDL with schematics and layouts.
+This project is direct mapped 16-byte cache created in structural VHDL with its corresponding schematics and layouts.
 
 ### Chip test bench run command                                  
 ```bash
